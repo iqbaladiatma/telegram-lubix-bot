@@ -1,0 +1,11 @@
+[build]
+# Reduce memory usage during compilation
+jobs = 1
+rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-args=/STACK:8388608"]
+
+[env]
+# Increase stack size for Windows
+RUST_MIN_STACK = "8388608"
