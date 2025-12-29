@@ -1,14 +1,20 @@
 [package]
-name = "my_trading_bot"
-version = "0.1.0"
-edition = "2024"
+name = "lubix_bot"
+version = "4.0.0"
+edition = "2021"
 
 [dependencies]
-teloxide = { version = "0.13", features = ["macros"] }
+teloxide = { version = "0.12", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
-dotenv = "0.15"
-reqwest = { version = "0.11", features = ["json"] }
+log = "0.4"
+pretty_env_logger = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-pretty_env_logger = "0.5"
-log = "0.4"
+reqwest = { version = "0.11", features = ["json"] }
+dotenv = "0.15"
+# Library Solana
+solana-client = "1.18"
+solana-sdk = "1.18"
+bs58 = "0.5"
+base64 = "0.21" # Kita pakai engine baru di code nanti
+bincode = "1.3"
