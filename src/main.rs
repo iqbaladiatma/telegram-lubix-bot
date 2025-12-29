@@ -368,6 +368,26 @@ async fn callback_handler(bot: Bot, q: CallbackQuery, state: Arc<AppState>) -> R
         "back_to_main" => {
             bot.send_message(chat_id, get_welcome_text(user_name)).parse_mode(ParseMode::Html).reply_markup(make_main_menu()).await?;
         }
+        "back_to_panel" => {
+            if is_admin(chat_id.0) {
+                let users_count = state.users.lock().await.len();
+                let banned_count = state.banned.lock().await.len();
+                let premium_count = state.premium_users.lock().await.len();
+                let groups_count = state.premium_groups.lock().await.len();
+                let active_portfolios = state.portfolios.lock().await.len();
+                let watchlist_count = state.watchlist.lock().await.len();
+                let current_time = Utc::now().format("%Y-%m-%d %H:%M:%S UTC").to_string();
+                let admin_overview = format!(
+                    "🛡️ <b>LUBIX ADMIN PANEL v9.5</b>\n━━━━━━━━━━━━━━━━━━━━━━━\n\n📊 <b>SYSTEM OVERVIEW</b>\n├ 🖥 Status: <code>🟢 ONLINE</code>\n├ ⏰ Time: <code>{}</code>\n└ 🔄 Uptime: <code>Active</code>\n\n👥 <b>USER STATISTICS</b>\n├ 📈 Total Users: <code>{}</code>\n├ 🌟 Premium Users: <code>{}</code>\n├ 🚫 Banned Users: <code>{}</code>\n└ 📊 Conversion: <code>{:.1}%</code>\n\n💼 <b>ENGAGEMENT DATA</b>\n├ 📂 Active Portfolios: <code>{}</code>\n├ ⭐ Watchlists: <code>{}</code>\n└ 👥 Premium Groups: <code>{}</code>\n\n🔧 <b>QUICK ACTIONS</b>\nGunakan tombol di bawah untuk mengelola bot.\n━━━━━━━━━━━━━━━━━━━━━━━",
+                    current_time, users_count, premium_count, banned_count,
+                    if users_count > 0 { (premium_count as f64 / users_count as f64) * 100.0 } else { 0.0 },
+                    active_portfolios, watchlist_count, groups_count
+                );
+                bot.send_message(chat_id, admin_overview).parse_mode(ParseMode::Html).reply_markup(make_admin_menu()).await?;
+            } else {
+                bot.send_message(chat_id, "❌ Access Denied").await?;
+            }
+        }
         "menu_crypto" => {
             state.states.lock().await.insert(user_key, UserState::AwaitingCrypto);
             bot.send_message(chat_id, "🪙 <b>CRYPTO</b>\n\nMasukkan ticker:\n<i>Contoh: BTC, ETH, SOL</i>").parse_mode(ParseMode::Html).await?;
